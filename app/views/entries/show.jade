@@ -1,0 +1,38 @@
+extends ../layouts/default
+
+block main
+  h1= entry.title
+
+block content
+  .row
+    .span9
+      p=entry.body
+      p.author
+        span Author :&nbsp;
+        a(href="/users/"+entry.user._id)=entry.user.name
+      .date= formatDate(entry.createdAt, "%b %d, %Y at %I:%M %p")
+      if (entry.tags)
+        .tags
+          | Tags :&nbsp;
+          each tag in entry.tags.split(',')
+            a.tag(href="/tags/"+tag)
+              i.icon-tags
+              |  #{tag}
+    .span3
+      if (!entry.isNew && entry.image && entry.image.files && entry.image.files.length)
+        img(src=entry.image.cdnUri + '/mini_' + entry.image.files[0])
+
+  p
+    br
+    form.center.form-inline.confirm(action="/entrys/"+entry.id, method="post")
+      a.btn(href='/entrys/'+entry._id+'/edit', title="edit") Edit
+      &nbsp;&nbsp;
+      input(type="hidden", name="_method", value="DELETE")
+      button.btn.btn-danger(type="submit") delete
+
+  p
+    br
+    h2 Comments
+    #each comment in entry.comments
+    #  include ../comments/comment
+    #include ../comments/form

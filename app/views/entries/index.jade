@@ -1,0 +1,27 @@
+extends ../layouts/default
+
+block main
+  h1 Entries
+
+block content
+  each entry in entries
+    .entry
+      a.title(href='/entries/'+entry._id, title=entry.title) #{entry.title}
+      p=entry.body
+      .author
+        span= formatDate(entry.createdAt, "%b %d, %Y at %I:%M %p")
+        span &nbsp;| Author :&nbsp;
+        a(href="/users/"+entry.user._id)=entry.user.name
+        | &nbsp;|&nbsp;
+        if (entry.tags)
+          span.tags
+            span Tags :&nbsp;
+            each tag in entry.tags.split(',')
+              a.tag(href="/tags/"+tag)
+                i.icon-tags
+                |  #{tag}
+
+  if (pages > 1)
+    .pagination
+      ul
+        != createPagination(pages, page)

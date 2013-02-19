@@ -37,3 +37,11 @@ exports.article = {
       next()
     }
 }
+exports.entry = {
+    hasAuthorization : function (req, res, next) {
+      if (req.entry.user.id != req.user.id) {
+        return res.redirect('/entries/'+req.entry.id)
+      }
+      next()
+    }
+}

@@ -1,0 +1,47 @@
+extends ../layouts/default
+
+block content
+  - var action = '/entries'
+  if (!entry.isNew)
+    - action += '/'+entry.id
+
+  if (typeof errors !== 'undefined')
+    .fade.in.alert.alert-block.alert-error
+      a.close(data-dismiss="alert", href="javascript:void(0)") x
+      ul
+        each error in errors
+          li= error.type
+
+  .row
+    .span7
+      form.form-horizontal(method="post", action=action, enctype="multipart/form-data")
+        if (!entry.isNew)
+          input(type="hidden", name="_method", value="PUT")
+
+        .control-group
+          label.control-label(for='title') Title
+          .controls
+            input#title.input-xlarge(type='text', name="title", value=entry.title, placeholder='Enter the title')
+
+        .control-group
+          label.control-label(for='title') Image
+          .controls
+            input(type='file', name="image[]")
+
+        .control-group
+          label.control-label(for='desc') Lead
+          .controls
+            textarea#desc.input-xlarge(type='text', rows="5", name="lead", placeholder='Enter the entry description')=entry.lead
+
+        .control-group
+          label.control-label(for='desc') Tags
+          .controls
+            input#tags(type='text', name="tags", value=entry.tags, placeholder='Enter the tags')
+
+        .form-actions
+          button.btn.btn-primary(type='submit') Save changes
+          &nbsp;
+          a.btn(href='/entrys', title="cancel") Cancel
+    .span5
+      if (!entry.isNew && entry.image && entry.image.files && entry.image.files.length)
+        img(src=entry.image.cdnUri + '/mini_' + entry.image.files[0])

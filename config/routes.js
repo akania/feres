@@ -1,8 +1,9 @@
 
-var mongoose = require('mongoose')
-  , Article = mongoose.model('Article')
-  , User = mongoose.model('User')
-  , async = require('async')
+var mongoose = require('mongoose'),
+    Article = mongoose.model('Article'),
+    User = mongoose.model('User'),
+    Entry = mongoose.model('Entry'),
+    async = require('async')
 
 module.exports = function (app, passport, auth) {
 
@@ -25,6 +26,21 @@ module.exports = function (app, passport, auth) {
 
   app.param('userId', users.user)
 
+
+  // entries routes
+  var entries = require('../app/controllers/entries')
+  app.get('/entries', entries.index)
+  app.get('/entries/new', auth.requiresLogin, entries.new)
+  app.post('/entries', auth.requiresLogin, entries.create)
+  app.get('/entries/:entryId', entries.show)
+  app.get('/entries/:entryId/edit', auth.requiresLogin, auth.entry.hasAuthorization, entries.edit)
+  app.put('/entries/:entryId', auth.requiresLogin, auth.entry.hasAuthorization, entries.update)
+  app.del('/entries/:entryId', auth.requiresLogin, auth.entry.hasAuthorization, entries.destroy)
+  app.param('entryId', entries.entry)
+
+
+
+
   // article routes
   var articles = require('../app/controllers/articles')
   app.get('/articles', articles.index)
@@ -38,7 +54,7 @@ module.exports = function (app, passport, auth) {
   app.param('id', articles.article)
 
   // home route
-  app.get('/', articles.index)
+  app.get('/', entries.index)
 
   // comment routes
   var comments = require('../app/controllers/comments')
